@@ -47,28 +47,36 @@ try {
                 'description' => 'Встреча с заказчиком для сбора требований',
                 'priority' => 1,
                 'status' => 'todo',
+                'progress' => 0,
+                'deadline' => date('Y-m-d', strtotime('+1 week'))
             ],
             [
                 'title' => 'Дизайн макета',
                 'description' => 'Разработать дизайн главной страницы',
                 'priority' => 2,
                 'status' => 'in_progress',
+                'progress' => 60,
+                'deadline' => date('Y-m-d', strtotime('+2 weeks'))
             ],
             [
                 'title' => 'Разработка функционала',
                 'description' => 'Реализовать основные функции',
                 'priority' => 2,
                 'status' => 'todo',
+                'progress' => 0,
+                'deadline' => date('Y-m-d', strtotime('+3 weeks'))
             ],
             [
                 'title' => 'Тестирование',
                 'description' => 'Провести тестирование и исправить баги',
                 'priority' => 3,
                 'status' => 'done',
+                'progress' => 100,
+                'deadline' => date('Y-m-d', strtotime('+4 weeks'))
             ],
         ];
 
-        $stmt = $db->prepare('INSERT INTO tasks (project_id, title, description, priority, status) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO tasks (project_id, title, description, priority, status, progress, deadline) VALUES (?, ?, ?, ?, ?, ?, ?)');
         $taskCount = 0;
         foreach ($projectIds as $projectId) {
             foreach ($tasks as $task) {
@@ -78,6 +86,8 @@ try {
                     $task['description'],
                     $task['priority'],
                     $task['status'],
+                    $task['progress'],
+                    $task['deadline'],
                 ]);
                 $taskCount++;
             }

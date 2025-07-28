@@ -34,8 +34,8 @@ function createTask($pdo, $data) {
 
     try {
         $stmt = $pdo->prepare('
-            INSERT INTO tasks (project_id, title, description, priority, status, deadline)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO tasks (project_id, title, description, priority, status, progress, deadline)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ');
 
         $stmt->execute([
@@ -44,6 +44,7 @@ function createTask($pdo, $data) {
             $data['description'] ?? null,
             $data['priority'] ?? 2,
             $data['status'] ?? 'todo',
+            $data['progress'] ?? 0,
             $data['deadline'] ?? null
         ]);
 
@@ -61,7 +62,7 @@ function updateTask($pdo, $id, $data) {
 
     try {
         $stmt = $pdo->prepare('
-            UPDATE tasks SET project_id = ?, title = ?, description = ?, priority = ?, status = ?, deadline = ?
+            UPDATE tasks SET project_id = ?, title = ?, description = ?, priority = ?, status = ?, progress = ?, deadline = ?
             WHERE id = ?
         ');
 
@@ -71,6 +72,7 @@ function updateTask($pdo, $id, $data) {
             $data['description'] ?? null,
             $data['priority'] ?? 2,
             $data['status'] ?? 'todo',
+            $data['progress'] ?? 0,
             $data['deadline'] ?? null,
             $id
         ]);

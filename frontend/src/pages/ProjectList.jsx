@@ -114,7 +114,7 @@ function ProjectList() {
               <div className="card project-card" key={project.id} onClick={() => navigate(`/project/${project.id}`)} style={{cursor: 'pointer', position: 'relative'}}>
                 <strong className="project-title">{project.title}</strong>
                 <p className="project-description">{project.description}</p>
-                <div style={{position: 'absolute', top: 10, right: 10, display: 'flex', gap: '0.5em'}} onClick={e => e.stopPropagation()}>
+                <div style={{display: 'flex', justifyContent: 'center', gap: '0.5em', marginTop: '1em'}} onClick={e => e.stopPropagation()}>
                   <button onClick={() => handleEdit(project)} title="Редактировать">✏️</button>
                   <button onClick={() => handleDelete(project.id)} title="Удалить">🗑️</button>
                 </div>

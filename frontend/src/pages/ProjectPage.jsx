@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { createTask, updateTask, deleteTask } from '../api/tasks';
 import './ProjectList.css';
@@ -10,10 +10,10 @@ function ProjectPage() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newTask, setNewTask] = useState({ title: '', description: '', priority: 2, status: 'todo' });
+  const [newTask, setNewTask] = useState({ title: '', description: '', priority: 2, status: 'todo', progress: 0, deadline: '' });
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [editTask, setEditTask] = useState({ title: '', description: '', priority: 2, status: 'todo' });
+  const [editTask, setEditTask] = useState({ title: '', description: '', priority: 2, status: 'todo', progress: 0, deadline: '' });
 
   const loadTasks = async () => {
     try {
@@ -45,7 +45,7 @@ function ProjectPage() {
     setAdding(true);
     try {
       await createTask({ ...newTask, project_id: parseInt(id) });
-      setNewTask({ title: '', description: '', priority: 2, status: 'todo' });
+      setNewTask({ title: '', description: '', priority: 2, status: 'todo', progress: 0, deadline: '' });
       await loadTasks();
     } catch {
       setError('Ошибка при добавлении задачи');
@@ -66,7 +66,14 @@ function ProjectPage() {
 
   const handleEditTask = (task) => {
     setEditId(task.id);
-    setEditTask({ title: task.title, description: task.description, priority: task.priority, status: task.status });
+    setEditTask({ 
+      title: task.title, 
+      description: task.description, 
+      priority: task.priority, 
+      status: task.status,
+      progress: task.progress || 0,
+      deadline: task.deadline || ''
+    });
   };
 
   const handleEditSave = async (taskId) => {
@@ -83,13 +90,29 @@ function ProjectPage() {
     setEditId(null);
   };
 
+  const getStatusText = (status) => {
+    const statusMap = {
+      'todo': 'К выполнению',
+      'in_progress': 'В работе',
+      'done': 'Завершено'
+    };
+    return statusMap[status] || status;
+  };
+
+  const navigate = useNavigate();
+
   if (loading) return <p>Загрузка...</p>;
   if (error) return <p>{error}</p>;
   if (!project) return <p>Проект не найден</p>;
 
   return (
     <div className="project-list-container">
-      <h1>{project.title}</h1>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2em'}}>
+        <h1>{project.title}</h1>
+        <button onClick={() => navigate('/')} style={{padding: '0.5em 1em', fontSize: '1em'}}>
+          ← Назад к проектам
+        </button>
+      </div>
       <p className="project-description">{project.description}</p>
       <h2>Задачи проекта</h2>
       <form className="project-form" onSubmit={handleAddTask} style={{marginBottom: '2em'}}>
@@ -122,6 +145,21 @@ function ProjectPage() {
           <option value="in_progress">В работе</option>
           <option value="done">Завершено</option>
         </select>
+        <input
+          type="number"
+          min="0"
+          max="100"
+          placeholder="Прогресс (%)"
+          value={newTask.progress}
+          onChange={e => setNewTask({ ...newTask, progress: parseInt(e.target.value) || 0 })}
+          style={{minWidth: '120px'}}
+        />
+        <input
+          type="date"
+          value={newTask.deadline}
+          onChange={e => setNewTask({ ...newTask, deadline: e.target.value })}
+          style={{minWidth: '150px'}}
+        />
         <button type="submit" disabled={adding}>Добавить</button>
       </form>
       {tasks.length === 0 ? (
@@ -162,6 +200,21 @@ function ProjectPage() {
                   <option value="in_progress">В работе</option>
                   <option value="done">Завершено</option>
                 </select>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="Прогресс (%)"
+                  value={editTask.progress}
+                  onChange={e => setEditTask({ ...editTask, progress: parseInt(e.target.value) || 0 })}
+                  style={{width: '100%', marginBottom: '0.5em'}}
+                />
+                <input
+                  type="date"
+                  value={editTask.deadline}
+                  onChange={e => setEditTask({ ...editTask, deadline: e.target.value })}
+                  style={{width: '100%', marginBottom: '0.5em'}}
+                />
                 <button onClick={() => handleEditSave(task.id)} style={{marginRight: '0.5em'}}>Сохранить</button>
                 <button onClick={handleEditCancel} type="button">Отмена</button>
               </div>
@@ -169,11 +222,14 @@ function ProjectPage() {
               <div className="card project-card" key={task.id} style={{position: 'relative'}}>
                 <strong className="project-title">{task.title}</strong>
                 <p className="project-description">{task.description}</p>
-                <div style={{marginTop: '1em', fontSize: '0.95em'}}>
-                  <span>Статус: <b>{task.status}</b></span><br/>
+                <div className="project-card-details">
+                  <span>Статус: <b>{getStatusText(task.status)}</b></span>
                   <span>Приоритет: <b>{task.priority}</b></span>
+                  <span>Прогресс: <b>{task.progress || 0}%</b></span>
+                  {task.deadline && <span className="project-deadline">Дедлайн: <b>{new Date(task.deadline).toLocaleDateString('ru-RU')}</b></span>}
+                  {task.created_at && <span>Создано: <b>{new Date(task.created_at).toLocaleDateString('ru-RU')}</b></span>}
                 </div>
-                <div style={{position: 'absolute', top: 10, right: 10, display: 'flex', gap: '0.5em'}}>
+                <div style={{display: 'flex', justifyContent: 'center', gap: '0.5em', marginTop: '1em'}}>
                   <button onClick={() => handleEditTask(task)} title="Редактировать">✏️</button>
                   <button onClick={() => handleDeleteTask(task.id)} title="Удалить">🗑️</button>
                 </div>
