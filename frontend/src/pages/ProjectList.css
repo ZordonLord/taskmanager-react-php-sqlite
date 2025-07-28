@@ -39,6 +39,46 @@
   font-size: 1em;
 }
 
+.project-form {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.project-form input {
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  min-width: 180px;
+}
+.project-form button {
+  padding: 0.5em 1.5em;
+  font-size: 1em;
+  border-radius: 8px;
+  border: none;
+  background: #646cff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.project-form button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+.project-card button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1em;
+  padding: 0.2em 0.5em;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.project-card button:hover {
+  background: #f0f0ff;
+}
+
 @media (prefers-color-scheme: light) {
   .project-card {
     background: #fff;
