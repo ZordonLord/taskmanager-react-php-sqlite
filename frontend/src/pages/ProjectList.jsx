@@ -2,11 +2,13 @@
 import { useEffect, useState } from 'react';
 import { getProjects } from '../api/projects';
 import './ProjectList.css';
+import { useNavigate } from 'react-router-dom';
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getProjects()
@@ -26,7 +28,7 @@ function ProjectList() {
       ) : (
         <div className="project-grid">
           {projects.map(project => (
-            <div className="card project-card" key={project.id}>
+            <div className="card project-card" key={project.id} onClick={() => navigate(`/project/${project.id}`)} style={{cursor: 'pointer'}}>
               <strong className="project-title">{project.title}</strong>
               <p className="project-description">{project.description}</p>
             </div>
