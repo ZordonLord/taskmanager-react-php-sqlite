@@ -21,3 +21,16 @@
 - **Формат взаимодействия**: REST API (JSON)
 
 ---
+
+## Запуск
+
+Запуск сервера PHP:
+
+```
+php -S localhost:8000 -t backend backend/api.php
+```
+Запуск React:
+
+```
+npm --prefix frontend run dev
+```
