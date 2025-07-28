@@ -36,6 +36,54 @@ try {
         }
 
         echo "Добавлено " . count($projects) . " тестовых проектов\n";
+
+        // Получаем id всех проектов
+        $projectIds = $db->query('SELECT id FROM projects')->fetchAll(PDO::FETCH_COLUMN);
+
+        // Тестовые задачи для каждого проекта
+        $tasks = [
+            [
+                'title' => 'Обсудить требования',
+                'description' => 'Встреча с заказчиком для сбора требований',
+                'priority' => 1,
+                'status' => 'todo',
+            ],
+            [
+                'title' => 'Дизайн макета',
+                'description' => 'Разработать дизайн главной страницы',
+                'priority' => 2,
+                'status' => 'in_progress',
+            ],
+            [
+                'title' => 'Разработка функционала',
+                'description' => 'Реализовать основные функции',
+                'priority' => 2,
+                'status' => 'todo',
+            ],
+            [
+                'title' => 'Тестирование',
+                'description' => 'Провести тестирование и исправить баги',
+                'priority' => 3,
+                'status' => 'done',
+            ],
+        ];
+
+        $stmt = $db->prepare('INSERT INTO tasks (project_id, title, description, priority, status) VALUES (?, ?, ?, ?, ?)');
+        $taskCount = 0;
+        foreach ($projectIds as $projectId) {
+            foreach ($tasks as $task) {
+                $stmt->execute([
+                    $projectId,
+                    $task['title'],
+                    $task['description'],
+                    $task['priority'],
+                    $task['status'],
+                ]);
+                $taskCount++;
+            }
+        }
+        echo "Добавлено $taskCount тестовых задач\n";
+
     } else {
         echo "Проекты уже существуют в базе данных\n";
     }
